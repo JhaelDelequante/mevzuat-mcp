@@ -8,6 +8,7 @@ The MCP server will be available at:
     http://localhost:8000/mcp/
 """
 
+from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 from mevzuat_mcp_server import app as mcp
 
@@ -24,6 +25,19 @@ async def health_check(request):
 # Create ASGI app directly from FastMCP server
 # This avoids routing issues with nested mounts
 app = mcp.http_app()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+        "http://127.0.0.1:5174",
+        "http://localhost:5174",
+    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["Mcp-Session-Id"],
+)
 
 # Endpoints:
 # - /mcp/ - MCP server (Streamable HTTP transport, default FastMCP path)
